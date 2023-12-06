@@ -1,0 +1,67 @@
+---
+title: "Project 2"
+author: "Brian Bruxvoort"
+date: "2023-11-14"
+output: pdf_document
+---
+
+```{r}
+crab <- read.table("Horseshoe.txt", header = TRUE)
+head(crab)
+```
+
+```{r}
+mod.fit <- glm(formula = satellite ~ width, data = crab, family = poisson(link = log))
+summary(mod.fit)
+```
+
+# Part 1
+Perform a Wald test for a Beta1
+
+z = beta hat1/standard error = 0.16/0.1997 = 8.216
+Width is significant.
+
+# Part 2
+How can we perform a LRT for an explanatory variable?
+```{r, message=FALSE, warning=FALSE}
+library(package = car)
+Anova(mod = mod.fit, test = "LR")
+```
+
+
+# Part 3
+How can we estimate the expected number of satellites when the shell width is 23?
+```{r}
+width <- 23
+mod.predict <- predict(mod.fit, data.frame(width = 23))
+mod.predict
+```
+
+# Part 4
+How can we find a Wald confidence interval for mu? Are there any worries about interval limits being outside of the appropriate numerical range?
+```{r}
+conf.int <- confint(mod.fit)
+conf.int
+```
+
+No there are no worries that the confidence interval for mu is not outside the limits because it is not below 0 or above 1.
+
+# Part 5
+How can we find a Profile LR confidence interval for mu?
+```{r}
+exp(confint(object = mod.fit, level = 0.95))
+```
+
+# Part 6
+How could you estimate the covariance matrix and print it in R?
+```{r}
+vcov(mod.fit)
+```
+
+# Part 7
+How could you include some type of transformation of an explanatory variable(s) in the model?
+```{r}
+mod.fit2 <- glm(formula = satellite ~ width + I(width^2), data = crab, family = poisson(link = log))
+summary(mod.fit2)
+```
+
